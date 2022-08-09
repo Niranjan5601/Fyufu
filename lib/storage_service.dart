@@ -13,15 +13,8 @@ class Storage {
     try {
       await storage.ref('test/$filename').putFile(file);
     } on firebase_core.FirebaseException catch (e) {
-      print(e);
     }
   }
-
-  // Future<String> downloadUrl(String imageName) async {
-  //   String downloadURL = await storage.ref('test/$imageName').getDownloadURL();
-
-  //   return downloadURL;
-  // }
 
   Future<List> loadImages() async {
     List<String> files = [];

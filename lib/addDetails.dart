@@ -109,14 +109,14 @@ class _AddDetailsState extends State<AddDetails> {
                           textAlign: TextAlign.center,
                         ),
                         onPressed: () =>
-                            uploadImage(0) //pickImage(ImageSource.gallery),
+                            uploadImage(0)
 
                         ),
                     ElevatedButton(
                         child: const Text("Choose from \n gallery",
                             textAlign: TextAlign.center),
                         onPressed: () =>
-                            uploadImage(1) //pickImage(ImageSource.gallery),
+                            uploadImage(1)
                         ),
                   ],
                 ),
@@ -229,15 +229,12 @@ class _AddDetailsState extends State<AddDetails> {
                     }
 
                     insertData();
-                    print(pathxy);
                     pathxy = "MainPage";
-                    print(pathxy);
 
                       Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => MainPage(title: pathxy,)),
                   );
-                    //Navigator.pop(context);
                   },
                   child: const Text(
                     "Add",
@@ -269,31 +266,12 @@ class _AddDetailsState extends State<AddDetails> {
       var file = File(image.path);
 
       uplimg.add(file);
-      //    print(pathxy);
 
       setState(() => pickedimgList.add(file));
     } on PlatformException catch (e) {
-      //   print("failed to pick image: $e");
     }
   }
 
-//
-  //  Future<List> loadImages(String imgloadpath) async {
-  //   List<String> files = [];
-  //   final firebase_storage.FirebaseStorage storage =
-  //       firebase_storage.FirebaseStorage.instance;
-
-  //   final result = await storage.ref(imgloadpath).list();
-  //   final List<firebase_storage.Reference> allFiles = result.items;
-
-  //   await Future.forEach<firebase_storage.Reference>(allFiles, (file) async {
-  //     final String fileUrl = await file.getDownloadURL();
-
-  //     files.add(fileUrl);
-  //   });
-
-  //   return files;
-  // }
 
   uploadtofb() async {
     count = 0;

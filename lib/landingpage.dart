@@ -69,7 +69,6 @@ class _LandingPageState extends State<LandingPage> {
 
   @override
   void deactivate() {
-    // TODO: implement deactivate
     _vehicleStream?.cancel();
     super.deactivate();
   }

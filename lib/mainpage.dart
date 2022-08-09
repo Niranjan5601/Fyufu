@@ -43,21 +43,24 @@ class _MainPageState extends State<MainPage> {
   }
 
   void activateListeners(String x) {
-    vehicleStream = database.child(x).onValue.listen((event) {
+    vehicleStream = database.child(x).onValue.listen((event) async {
       dynamic data = event.snapshot.value;
 
       List temp = [];
       List tempforname = [];
-      landingpg = event.snapshot.child("lp").value;
+      landingpg = await event.snapshot.child("lp").value;
       if (landingpg == "yes") {
         data.forEach((k, v) {
           temp.add(event.snapshot.value);
+          print(temp);
         });
 
         setState(() {
           categories = temp;
         });
       } else {
+        print("object"+landingpg);
+        
         data.forEach((k, v) {
           if (k != "name" && k != "image" && k != "lp") {
             temp.add(k);
@@ -67,9 +70,6 @@ class _MainPageState extends State<MainPage> {
             images.add(imd);
           }
         });
-
-        // print(tempforname);
-        // print(images);
 
         var z = new Map<String, String>();
 
@@ -226,32 +226,12 @@ class _MainPageState extends State<MainPage> {
     super.deactivate();
   }
 
-//   static Future<int> getUserAmount() async {
-//   final response = await FirebaseDatabase.instance
-//       .reference()
-//       .child("Users")
-//       .once();
-//   var users = [];
-//   response.value.forEach((v) => users.add(v));
-//   print(users);
-//   return users.length;
-// }
-
   void getUserAmount() async {
-    final database = await FirebaseDatabase.instance
-        .reference()
-        .child("MainPage/")
-        .once();
+    final database =
+        await FirebaseDatabase.instance.reference().child("MainPage/").once();
 
     List<String> users = [];
 
     var sds = database.snapshot.value;
-
-    print(sds);
-
-    //database.snapshot.value.forEach((key,values) => users.add(key));
-
-    print(users);
-    print(users.length);
   }
 }

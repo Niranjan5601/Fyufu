@@ -22,8 +22,8 @@ class _UpdateDetailsState extends State<UpdateDetails> {
   List temp2 = [];
 
   void initState() {
-    // TODO: implement initStated
-    getUserAmount();
+    print(temp);
+
     super.initState();
   }
 
@@ -40,6 +40,7 @@ class _UpdateDetailsState extends State<UpdateDetails> {
     if (temp[0] == "yes") {
       updatepriceController.text = temp[4].toString();
       updatedescriptionController.text = temp[3];
+      isChecked = true;
     }
     dynamic datax;
 
@@ -58,38 +59,13 @@ class _UpdateDetailsState extends State<UpdateDetails> {
             ? null
             : updatepriceController.text
       });
-      // vehicleStream = database.child(pathxy).onValue.listen((event) async {
-      //   datax = event.snapshot.value;
-      //   print(datax+"sdfffffffffffffffffffffffff");
-
-      //   //  await database.child(newadd).set(datax);
-      // });
-
-//Errors to be resolved
-
-      // copy all the data from existing child to the new child and delete the old child
-
-      // landing page checkbox value
-
-      // leaving update page messes the title and path values
-
-      print("datax : $datax");
+     
 
       updatedescriptionController.clear();
       updatecategoriesController.clear();
       updateimageurlController.clear();
       updatepriceController.clear();
 
-//       Future.delayed(const Duration(milliseconds: 5000), () {
-
-// // Here you can write your code
-//                     //    database.child(pathxy).remove();
-
-//   setState(() {
-//     // Here you can write your code for open new view
-//   });
-
-// });
     }
 
     return WillPopScope(
@@ -100,7 +76,6 @@ class _UpdateDetailsState extends State<UpdateDetails> {
           return false;
         },
         child: Scaffold(
-          //resizeToAvoidBottomInset: false,
           appBar: AppBar(
             title: Text("Update Data"),
           ),
@@ -158,18 +133,10 @@ class _UpdateDetailsState extends State<UpdateDetails> {
                       ],
                     ),
 
-                    // TextFormField(
-                    //   controller: updateimageurlController,
-                    //   decoration: const InputDecoration(
-                    //       label: Text("Imageurl"),
-                    //       border: OutlineInputBorder()),
-                    // ),
-
                     const SizedBox(height: 15),
                     Row(
                       children: [
                         Checkbox(
-                          value: isChecked,
                           onChanged: (bool? value) {
                             setState(() {
                               isChecked = value!;
@@ -181,6 +148,7 @@ class _UpdateDetailsState extends State<UpdateDetails> {
                               }
                             });
                           },
+                          value: isChecked,
                         ),
                         const Text(
                           "Landing Page",
@@ -237,7 +205,6 @@ class _UpdateDetailsState extends State<UpdateDetails> {
                         final snackBar =
                             SnackBar(content: Text('Updated Data'));
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        //database.child(pathxy).remove();
                       },
                       child: const Text(
                         "Update",
@@ -271,43 +238,23 @@ class _UpdateDetailsState extends State<UpdateDetails> {
 
   @override
   void deactivate() {
-    // TODO: implement deactivate
     vehicleStream?.cancel();
     super.deactivate();
   }
 
   static Future<int> getUserAmount() async {
     dynamic datax;
-    vehicleStream =
-        database.child("MainPage").onValue.listen((event) async {
-      // datax = event.snapshot.value;
-      // print(datax + "sdfffffffffffffffffffffffff");
-      print("object" + event.snapshot.value.toString());
-      //  await database.child(newadd).set(datax);
-    });
-    final sdfsd =
-        await FirebaseDatabase.instance.ref().child("MainPage").get();
+
+    vehicleStream = database.child("MainPage").onValue.listen((event) async {
+   });
+    final sdfsd = await FirebaseDatabase.instance.ref().child("MainPage").get();
     var users = [];
-    print(sdfsd.value);
-    // var dfsd = sdfsd;
-    // if (dfsd != null) print(dfsd);
-    // // dfsd.forEach((v) => users.add(v));
-    print(users);
-
-
-
-
-var collection = FirebaseDatabase.instance.ref().child('MainPage');
-var querySnapshot = await collection.get();
-print("khbkjbk"+querySnapshot.value.toString());
-
-
-
-
-
-
-
+  
+    var collection = FirebaseDatabase.instance.ref().child('MainPage');
+    var querySnapshot = await collection.get();
 
     return users.length;
   }
+
+ 
 }

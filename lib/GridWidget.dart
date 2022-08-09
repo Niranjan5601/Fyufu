@@ -21,8 +21,12 @@ class GridWidget extends StatelessWidget {
   callupda(var context) {
     temp.clear();
     vehicleStream = database.child(pathxy).onValue.listen((event) {
-      dynamic data = event.snapshot.value;
-      if (event.snapshot.child("lp").value == "yes") {
+      dynamic data;
+      data = event.snapshot.value;
+      var df = (data.toString());
+      df = df.substring(df.indexOf("\"lp") + 6);
+      df = df.substring(0,df.indexOf(","));
+      if (df == "yes") {
         temp.add("yes");
         temp.add(event.snapshot.child("name").value);
         temp.add(event.snapshot.child("image").value);
@@ -47,14 +51,12 @@ class GridWidget extends StatelessWidget {
   }
 
   Storage storage = new Storage();
-  //Future<List> pics = storage.loadImages();
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: storage.loadImages(),
         builder: (context, AsyncSnapshot<List> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-         
             return GridView.builder(
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 3,
@@ -64,7 +66,6 @@ class GridWidget extends StatelessWidget {
               itemBuilder: (context, idx) {
                 return InkWell(
                   onTap: () {
-                    //print("images:$images");
                     pgtitle = smapkeys[idx];
 
                     pathxy += "/" + categories[idx];
@@ -92,7 +93,7 @@ class GridWidget extends StatelessWidget {
                               topRight: Radius.circular(15),
                             ),
                             child: Image.network(
-                            snapshot.data?[idx],
+                              snapshot.data?[idx],
                               height: 100,
                               width: double.infinity,
                               fit: BoxFit.cover,
@@ -112,7 +113,6 @@ class GridWidget extends StatelessWidget {
                                   child: Text(
                                     text[idx].toString(),
                                     overflow: TextOverflow.ellipsis,
-                                    //  style: TextStyle(fontSize: 15),
                                     textAlign: TextAlign.center,
                                   ),
                                 ),
