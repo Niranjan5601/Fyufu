@@ -31,7 +31,8 @@ class _MainPageState extends State<MainPage> {
     // TODO: implement initStated
     super.initState();
     getUserAmount();
-    activateListeners(pathxy);
+     activateListeners(pathxy);
+
     // database.child(pathxy).child("2w").child("a").set({
     //   "name": "abc",
     //   "image":
@@ -52,17 +53,18 @@ class _MainPageState extends State<MainPage> {
       if (landingpg == "yes") {
         data.forEach((k, v) {
           temp.add(event.snapshot.value);
-          print(temp);
         });
 
         setState(() {
           categories = temp;
         });
       } else {
-        print("object"+landingpg);
-        
         data.forEach((k, v) {
-          if (k != "name" && k != "image" && k != "lp") {
+          if (k != "name" &&
+              k != "image" &&
+              k != "lp" &&
+              k != "desc" &&
+              k != "price") {
             temp.add(k);
             dynamic namedata = event.snapshot.child(k).child("name").value;
             tempforname.add(namedata);
@@ -105,12 +107,16 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        pathxy = pathxy.substring(0, pathxy.lastIndexOf("/"));
-        Navigator.pop(context);
-        activateListeners(pathxy);
-        pgtitle = pathxy;
+        if (pathxy == "MainPage") {
+          return false;
+        } else {
+          pathxy = pathxy.substring(0, pathxy.lastIndexOf("/"));
+          Navigator.pop(context);
+          activateListeners(pathxy);
+          pgtitle = pathxy;
 
-        return false;
+          return false;
+        }
       },
       child: Scaffold(
         drawer: Drawer(

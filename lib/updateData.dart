@@ -4,9 +4,9 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import 'globalvar.dart';
+import 'mainpage.dart';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:firebase_core/firebase_core.dart' as firebase_core;
 
 class UpdateDetails extends StatefulWidget {
   UpdateDetails({
@@ -22,8 +22,6 @@ class _UpdateDetailsState extends State<UpdateDetails> {
   List temp2 = [];
 
   void initState() {
-    print(temp);
-
     super.initState();
   }
 
@@ -59,13 +57,12 @@ class _UpdateDetailsState extends State<UpdateDetails> {
             ? null
             : updatepriceController.text
       });
-     
+
 
       updatedescriptionController.clear();
       updatecategoriesController.clear();
       updateimageurlController.clear();
       updatepriceController.clear();
-
     }
 
     return WillPopScope(
@@ -132,7 +129,6 @@ class _UpdateDetailsState extends State<UpdateDetails> {
                         )
                       ],
                     ),
-
                     const SizedBox(height: 15),
                     Row(
                       children: [
@@ -205,6 +201,18 @@ class _UpdateDetailsState extends State<UpdateDetails> {
                         final snackBar =
                             SnackBar(content: Text('Updated Data'));
                         ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                        pathxy = "MainPage";
+
+                        pgtitle = "MainPage";
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MainPage(
+                                    title: pathxy,
+                                  )),
+                        );
                       },
                       child: const Text(
                         "Update",
@@ -245,16 +253,18 @@ class _UpdateDetailsState extends State<UpdateDetails> {
   static Future<int> getUserAmount() async {
     dynamic datax;
 
-    vehicleStream = database.child("MainPage").onValue.listen((event) async {
-   });
+    vehicleStream = database.child("MainPage").onValue.listen((event) async {});
     final sdfsd = await FirebaseDatabase.instance.ref().child("MainPage").get();
     var users = [];
-  
+
     var collection = FirebaseDatabase.instance.ref().child('MainPage');
     var querySnapshot = await collection.get();
 
     return users.length;
   }
-
- 
 }
+// if using auto gen keys - can use some mapping with key as names and then values as a list of ( auto gen keys, image, lp , (desc , price - if available)  )
+
+// fro example (2312312312 : [name: ramesh, image: url, lp: yes, desc: sfsdf, price: 1], 23233333111111: [name: suresh, image: url, lp:no])
+
+// now if clicking on suresh it must store that key and then follow te same process ,if again a path with sub-childs is clicked it will also store that key and help in navigation 

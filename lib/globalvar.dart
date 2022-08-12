@@ -6,6 +6,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 
 final formkey = GlobalKey<FormState>();
 var pathxy = "MainPage";
+var pgtitle = "MainPage";
+
 var landingpg;
 var img, desc, price;
 List categories = [];
@@ -13,7 +15,6 @@ List uplimg = [];
 List pickedimgList = [];
 int count = 0;
 List images = [];
-var pgtitle = "MainPage";
 List names = [];
 List temp = [];
 List temp2 = [];

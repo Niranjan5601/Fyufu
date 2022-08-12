@@ -33,7 +33,7 @@ class _LandingPageState extends State<LandingPage> {
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               child: Container(
-                color: Colors.pink,
+                color: Colors.blue,
                 height: MediaQuery.of(context).size.height,
                 child: Column(
                   children: [
@@ -44,7 +44,7 @@ class _LandingPageState extends State<LandingPage> {
                           child: Image.network(
                             img,
                             height: 300,
-                            width: double.infinity,
+                            width: double.infinity, 
                             fit: BoxFit.contain,
                           ),
                         ),
