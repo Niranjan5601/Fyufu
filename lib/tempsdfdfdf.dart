@@ -1,3 +1,4 @@
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -26,19 +27,14 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-
-DateTime now = DateTime.now();
-DateTime now2 = DateTime.now();
-
   final database = FirebaseDatabase.instance.reference();
   bool isSelected = true;
+  List names = [];
   @override
   void initState() {
     // TODO: implement initStated
     super.initState();
- now = DateTime.now();
-
-
+    getUserAmount();
     activateListeners(pathxy);
 
     // String url =
@@ -59,22 +55,17 @@ DateTime now2 = DateTime.now();
     //   "desc": "descriptionController",
     //   "price": "100"
     // });
-  
-
-  //   var _timer = new Timer(const Duration(milliseconds: 4000), () {
-
-      // });
-  
-  
   }
 
-  Future<void> activateListeners(String x) async {
+  void activateListeners(String x) {
     vehicleStream = database.child(x).onValue.listen((event) async {
       dynamic data = event.snapshot.value;
+      //   var _timer = new Timer(const Duration(milliseconds: 4000), () {
 
-      
+      // });
 
       List temp = [];
+      List tempforname = [];
       landingpg = await event.snapshot.child("lp").value;
       if (landingpg == "yes") {
         data.forEach((k, v) {
@@ -85,20 +76,61 @@ DateTime now2 = DateTime.now();
           categories = temp;
         });
       } else {
+        final FirebaseStorage storage = FirebaseStorage.instance;
         data.forEach((k, v) async {
-          if (k != "lp" && k != "desc" && k != "price") {
+        
+        
+        print("DSSSSSSSobject"+k.toString()+"sddddddddd"+v.toString());
+
+          if (k != "name" && k != "lp" && k != "desc" && k != "price") {
             temp.add(k);
-            tempforname.add(k);
+            // dynamic namedata = event.snapshot.child(k).child("name").value;
+            tempforname.add(event.snapshot.child(k).key);
+            // var downloadimgurl = await storage
+            //     .ref()
+            //     .child(pathxy + "/" + k + "0")
+            //     .getDownloadURL();
+            // images.add(downloadimgurl);
 
-            // fetch image urls in a function and append those in the list - "images"
 
-            //images.add("value");
+
+               final FirebaseStorage storage =
+        FirebaseStorage.instance;
+
+    final result = await storage.ref("MainPage/bhi").list();
+    final List<Reference> allFiles = result.items;
+
+    await Future.forEach<Reference>(allFiles, (file) async {
+      final String fileUrl = await file.getDownloadURL();
+
+      images.add(fileUrl);
+    });
+
+
+
+
+
+            print("object");
+            print("dfs:" + images.toString());
           }
         });
 
+        var z = new Map<String, String>();
 
+        for (var i = 0; i < temp.length; i++) {
+          z[temp[i]] = images[i];
+        }
 
-     
+        smapkeys = z.keys.toList()..sort(); // get only keys
+
+        for (var i = 0; i < temp.length; i++) {
+          smap[smapkeys[i]] = z[smapkeys[i]].toString();
+        }
+
+        smap.entries
+            .map((e) => smapval.add(e.value))
+            .toList(); // get only values
+
         tempforname.sort();
         temp.sort();
 
@@ -109,7 +141,9 @@ DateTime now2 = DateTime.now();
     });
   }
 
- 
+  showText() async {
+    return Future.delayed(Duration());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -205,24 +239,14 @@ DateTime now2 = DateTime.now();
         body: categories.isEmpty
 
             ///if Landing page call another activity to diplay things accordingly
-            ///
-            ///
-    
-            ? 
-            //const Center(child: CircularProgressIndicator())
-          Align(
-  alignment: Alignment.center, // Align however you like (i.e .centerRight, centerLeft)
-  child: Text("No Data Found",
-                  style: TextStyle(color: Colors.black, fontSize: 20),
-  ),
-)
+            ? const Center(child: CircularProgressIndicator())
             : landingpg == "yes"
                 ? LandingPage(
                     cat: categories,
                   )
                 : GridWidget(
-                    length: tempforname.length,
-                    text: tempforname,
+                    length: smapkeys.length,
+                    text: smapkeys,
                     acti: activateListeners,
                     isSelected: isSelected,
                   ),
@@ -248,5 +272,14 @@ DateTime now2 = DateTime.now();
     // TODO: implement deactivate
     vehicleStream?.cancel();
     super.deactivate();
+  }
+
+  void getUserAmount() async {
+    final database =
+        await FirebaseDatabase.instance.reference().child("MainPage/").once();
+
+    List<String> users = [];
+
+    var sds = database.snapshot.value;
   }
 }

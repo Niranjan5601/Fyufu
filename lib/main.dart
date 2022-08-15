@@ -1,8 +1,9 @@
 import 'package:anything/globalvar.dart';
 import 'package:anything/mainpage.dart';
+import 'package:anything/storage_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,15 +17,24 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
+    // check for update in the application
+
     vehicleStream = database.child("Update").onValue.listen((event) {
       dynamic data = event.snapshot.value;
 
       if (data == "yes") {
-//show alert dialog box
+        //show alert dialog box to update the app from playstore
 
-      }
+      } else {}
     });
-    var x = "MainPage";
+    print(storageImages.toString() + "LLL");
+    //fetching here also doesn't work and causes the same error
+
+    Storage stor = Storage();
+    var imagesii = Future.value(stor.loadImages());
+    print(imagesii.toString());
+
+    print(storageImages.toString() + "PPPPPPPPPPPPPPPPPP");
 
     return MaterialApp(
       title: 'MainPage',
@@ -32,7 +42,7 @@ class MyApp extends StatelessWidget {
         fontFamily: "OpenSans",
         primarySwatch: Colors.amber,
       ),
-      home: MainPage(title: x),
+      home: MainPage(title: "MainPage"),
     );
   }
 }

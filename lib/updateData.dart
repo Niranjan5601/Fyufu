@@ -28,7 +28,7 @@ class _UpdateDetailsState extends State<UpdateDetails> {
   }
 
   bool toenable = false;
-  var updateimageurlController = TextEditingController()..text = temp[2];
+  var imglist = [temp[2]];
 
   var updatedescriptionController = TextEditingController();
   var updatepathController = TextEditingController()..text = pathxy;
@@ -43,14 +43,19 @@ class _UpdateDetailsState extends State<UpdateDetails> {
       isChecked = true;
     }
     dynamic datax;
+    var rr = imglist.toString();
+    rr = rr.substring(2, rr.length );
 
+    imglist = rr.split(",");
+
+   
     void updatedata() async {
       var newadd = (pathxy.substring(0, pathxy.lastIndexOf("/") + 1)) +
           updatecategoriesController.text;
 
       database.child(pathxy).set({
         "name": updatecategoriesController.text,
-        "image": updateimageurlController.text,
+        "image": imglist.toString(),
         "lp": landingpg,
         "desc": updatedescriptionController.text.isEmpty
             ? null
@@ -60,13 +65,12 @@ class _UpdateDetailsState extends State<UpdateDetails> {
             : updatepriceController.text
       });
 
-      
       dynamic datax;
 
       vehicleStream = database.child(pathxy).onValue.listen((event) {
         datax = event.snapshot.value;
         // database.child(newadd).set(datax);
-        print(datax);
+        //print(datax);
       });
       //final dataToUpdate = await database.child(pathxy).get();
       // database.child(newadd).set(dataToUpdate);
@@ -74,7 +78,6 @@ class _UpdateDetailsState extends State<UpdateDetails> {
 
       updatedescriptionController.clear();
       updatecategoriesController.clear();
-      updateimageurlController.clear();
       updatepriceController.clear();
     }
 
@@ -133,14 +136,44 @@ class _UpdateDetailsState extends State<UpdateDetails> {
                             ))
                       ],
                     ),
-                    Row(
-                      children: [
-                        Container(
-                          height: 100,
-                          width: 100,
-                          child: Image.network(updateimageurlController.text),
-                        )
-                      ],
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      height: MediaQuery.of(context).size.height / 7,
+                      width: double.infinity,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemCount: imglist.length,
+                          itemBuilder: (BuildContext ctx, int indx) {
+                            return Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Image.network(
+                                      imglist[indx].toString().trim(),
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                  Align(
+                                    alignment: Alignment.topRight,
+                                    child: IconButton(
+                                        padding:
+                                            EdgeInsets.fromLTRB(30, 0, 0, 30),
+                                        onPressed: () {
+                                          setState(() {
+                                            pickedimgList.removeAt(indx);
+                                            uplimg.removeAt(indx);
+                                          });
+                                        },
+                                        icon: Icon(
+                                          Icons.cancel,
+                                          color: Colors.red,
+                                          size: 20,
+                                        )),
+                                  )
+                                ]);
+                          }),
                     ),
                     const SizedBox(height: 15),
                     Row(
@@ -280,6 +313,9 @@ class _UpdateDetailsState extends State<UpdateDetails> {
     return http.get(Uri.parse(
         'https://vehicle-8c2b1-default-rtdb.firebaseio.com/MainPage.json'));
   }
+
+
+ 
 }
 // if using auto gen keys - can use some mapping with key as names and then values as a list of ( auto gen keys, image, lp , (desc , price - if available)  )
 

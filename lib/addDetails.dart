@@ -23,7 +23,6 @@ class _AddDetailsState extends State<AddDetails> {
   bool isChecked = false;
   bool toenable = false;
 
-  var imageurlController = TextEditingController();
   var categoriesController = TextEditingController();
   var descriptionController = TextEditingController();
   var pathController = TextEditingController()..text = pathxy;
@@ -35,15 +34,17 @@ class _AddDetailsState extends State<AddDetails> {
     return WillPopScope(
       onWillPop: () async {
         pathxy = pathxy.substring(0, pathxy.lastIndexOf("/"));
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => MainPage(
-                    title: pathxy,
-                  )),
-        );
+        print("path" + pathxy);
+        Navigator.pop(context);
+        // Navigator.push(
+        //   context,
+        //   MaterialPageRoute(
+        //       builder: (context) => MainPage(
+        //             title: pathxy,
+        //           )),
+        // );
         pgtitle = pathxy;
-        return true;
+        return false;
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -214,6 +215,8 @@ class _AddDetailsState extends State<AddDetails> {
                       }
 
                       uploadtofb();
+
+// here, go back to the page from which the plus icon was clicked
                     },
                     child: const Text(
                       "Add",
@@ -253,7 +256,7 @@ class _AddDetailsState extends State<AddDetails> {
 
   uploadtofb() async {
     count = 0;
-    String pp = categoriesController.text;
+    pp = categoriesController.text;
 
     for (var zx in uplimg) {
       count++;
@@ -263,40 +266,15 @@ class _AddDetailsState extends State<AddDetails> {
           .child((pathxy + "/" + pp + "/" + count.toString()));
 
       ref.putFile(zx);
-
-      var imgurl;
-
-      imgurl = ref.getDownloadURL();
     }
-
-    timer = new Timer(const Duration(milliseconds: 4000), () async {
-      final firebase_storage.FirebaseStorage storage =
-          firebase_storage.FirebaseStorage.instance;
-
-      final result = await storage.ref(pathxy + "/" + pp).list();
-      final List<Reference> allFiles = result.items;
-
-      await Future.forEach<Reference>(allFiles, (file) async {
-        final String fileUrl = await file.getDownloadURL();
-
-        storageImages.add(fileUrl);
-      });
-
-      insertData();
-
-      print(storageImages);
-    });
+    insertData();
   }
 
   Future<void> insertData() async {
     if (categoriesController.text.isEmpty) {
       return null;
     }
-    print("dssssssss" + storageImages.toString());
     database.child(pathxy).child(categoriesController.text).set({
-      "name":
-          categoriesController.text.isEmpty ? null : categoriesController.text,
-      "image": storageImages.isEmpty ? null : storageImages.toString(),
       "lp": landingpg,
       "desc": descriptionController.text.isEmpty
           ? null
@@ -306,8 +284,22 @@ class _AddDetailsState extends State<AddDetails> {
 
     descriptionController.clear();
     categoriesController.clear();
-    imageurlController.clear();
     priceController.clear();
+
+    // final firebase_storage.FirebaseStorage storage =
+    //     firebase_storage.FirebaseStorage.instance;
+
+    // final result = await storage.ref("MainPage/awaa").list();
+    // final List<Reference> allFiles = result.items;
+
+    // await Future.forEach<Reference>(allFiles, (file) async {
+    //   final String fileUrl = await file.getDownloadURL();
+
+    //   storageImages.add(fileUrl);
+    // });
+
+    // database.child(pathxy).child(pp).update({"image": storageImages.isEmpty?null:storageImages});
+
     final snackBar = SnackBar(
       content: Text('Added Data'),
     );

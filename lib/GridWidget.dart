@@ -66,7 +66,7 @@ class GridWidget extends StatelessWidget {
               itemBuilder: (context, idx) {
                 return InkWell(
                   onTap: () {
-                    pgtitle = smapkeys[idx];
+                    pgtitle = categories[idx];
 
                     pathxy += "/" + categories[idx];
                     !isSelected
@@ -93,7 +93,7 @@ class GridWidget extends StatelessWidget {
                               topRight: Radius.circular(15),
                             ),
                             child: Image.network(
-                              snapshot.data?[idx],
+                              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTs0uyjWTrJw53i8IJPHJ3IIjxs3-UXMkN3LyaVEtU&s",
                               height: 100,
                               width: double.infinity,
                               fit: BoxFit.cover,
