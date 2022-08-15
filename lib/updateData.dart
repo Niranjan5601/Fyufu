@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 import 'globalvar.dart';
 import 'mainpage.dart';
+import 'package:http/http.dart' as http;
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
@@ -58,6 +60,17 @@ class _UpdateDetailsState extends State<UpdateDetails> {
             : updatepriceController.text
       });
 
+      
+      dynamic datax;
+
+      vehicleStream = database.child(pathxy).onValue.listen((event) {
+        datax = event.snapshot.value;
+        // database.child(newadd).set(datax);
+        print(datax);
+      });
+      //final dataToUpdate = await database.child(pathxy).get();
+      // database.child(newadd).set(dataToUpdate);
+      //database.child(pathxy).remove();
 
       updatedescriptionController.clear();
       updatecategoriesController.clear();
@@ -261,6 +274,11 @@ class _UpdateDetailsState extends State<UpdateDetails> {
     var querySnapshot = await collection.get();
 
     return users.length;
+  }
+
+  Future<http.Response> fetchAlbum() {
+    return http.get(Uri.parse(
+        'https://vehicle-8c2b1-default-rtdb.firebaseio.com/MainPage.json'));
   }
 }
 // if using auto gen keys - can use some mapping with key as names and then values as a list of ( auto gen keys, image, lp , (desc , price - if available)  )

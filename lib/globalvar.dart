@@ -22,7 +22,9 @@ var database = FirebaseDatabase.instance.ref();
 StreamSubscription? vehicleStream;
 Map<String, List> dummy = {};
 var imgstorage = FirebaseStorage.instance;
+var timer;
 
 var smap = new Map<String, String>();
 var smapkeys = [];
 var smapval = [];
+var storageImages = [];

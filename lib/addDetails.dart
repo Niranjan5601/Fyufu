@@ -1,7 +1,11 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:firebase_core/firebase_core.dart' as firebase_core;
 
 import 'package:image_picker/image_picker.dart';
 
@@ -28,44 +32,17 @@ class _AddDetailsState extends State<AddDetails> {
 
   @override
   Widget build(BuildContext context) {
-    void insertData() {
-      if (categoriesController.text.isEmpty) {
-        return null;
-      }
-      uploadtofb();
-      database.child(pathxy).child(categoriesController.text).set({
-        "name": categoriesController.text.isEmpty
-            ? null
-            : categoriesController.text,
-        "image":
-            imageurlController.text.isEmpty ? null : imageurlController.text,
-        "lp": landingpg,
-        "desc": descriptionController.text.isEmpty
-            ? null
-            : descriptionController.text,
-        "price": priceController.text.isEmpty ? null : priceController.text
-      });
-      descriptionController.clear();
-      categoriesController.clear();
-      imageurlController.clear();
-      priceController.clear();
-      final snackBar = SnackBar(
-        content: Text('Added Data'),
-      );
-
-      ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    }
-
     return WillPopScope(
       onWillPop: () async {
         pathxy = pathxy.substring(0, pathxy.lastIndexOf("/"));
-Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => MainPage(
-                                      title: pathxy,
-                                    )),
-                          );        pgtitle = pathxy;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MainPage(
+                    title: pathxy,
+                  )),
+        );
+        pgtitle = pathxy;
         return true;
       },
       child: Scaffold(
@@ -236,7 +213,7 @@ Navigator.push(
                         return;
                       }
 
-                      insertData();
+                      uploadtofb();
                     },
                     child: const Text(
                       "Add",
@@ -291,5 +268,50 @@ Navigator.push(
 
       imgurl = ref.getDownloadURL();
     }
+
+    timer = new Timer(const Duration(milliseconds: 4000), () async {
+      final firebase_storage.FirebaseStorage storage =
+          firebase_storage.FirebaseStorage.instance;
+
+      final result = await storage.ref(pathxy + "/" + pp).list();
+      final List<Reference> allFiles = result.items;
+
+      await Future.forEach<Reference>(allFiles, (file) async {
+        final String fileUrl = await file.getDownloadURL();
+
+        storageImages.add(fileUrl);
+      });
+
+      insertData();
+
+      print(storageImages);
+    });
+  }
+
+  Future<void> insertData() async {
+    if (categoriesController.text.isEmpty) {
+      return null;
+    }
+    print("dssssssss" + storageImages.toString());
+    database.child(pathxy).child(categoriesController.text).set({
+      "name":
+          categoriesController.text.isEmpty ? null : categoriesController.text,
+      "image": storageImages.isEmpty ? null : storageImages.toString(),
+      "lp": landingpg,
+      "desc": descriptionController.text.isEmpty
+          ? null
+          : descriptionController.text,
+      "price": priceController.text.isEmpty ? null : priceController.text
+    });
+
+    descriptionController.clear();
+    categoriesController.clear();
+    imageurlController.clear();
+    priceController.clear();
+    final snackBar = SnackBar(
+      content: Text('Added Data'),
+    );
+
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 //import 'package:anything/screens/ui.dart';
 
@@ -7,6 +8,7 @@ import 'package:anything/globalvar.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:http/http.dart' as http;
 
 import 'addDetails.dart';
 import 'gridwidget.dart';
@@ -31,7 +33,19 @@ class _MainPageState extends State<MainPage> {
     // TODO: implement initStated
     super.initState();
     getUserAmount();
-     activateListeners(pathxy);
+    activateListeners(pathxy);
+
+    String url =
+        "https://vehicle-8c2b1-default-rtdb.firebaseio.com/MainPage/pricelist .json";
+
+    http.get(Uri.parse(url)).then((resp) {
+      print("sdfs");
+      print((json.decode(resp.body)));
+      database.child("MainPage/prices").set(json.decode(resp.body));
+      database.child("MainPage/pricelist ").remove();
+    });
+
+    //fetchAlbum();
 
     // database.child(pathxy).child("2w").child("a").set({
     //   "name": "abc",
@@ -43,9 +57,25 @@ class _MainPageState extends State<MainPage> {
     // });
   }
 
+  // fetchAlbum() {
+  //   print("object");
+  //   // print(http.get(Uri.parse(
+  //     'https://vehicle-8c2b1-default-rtdb.firebaseio.com/MainPage.json')));
+
+// final response =
+//           await http.get("https://jsonplaceholder.typicode.com/users");
+//       var resbody = json.decode(response.body);
+
+  //   return;
+  // }
+
   void activateListeners(String x) {
     vehicleStream = database.child(x).onValue.listen((event) async {
       dynamic data = event.snapshot.value;
+
+      //   var _timer = new Timer(const Duration(milliseconds: 4000), () {
+
+      // });
 
       List temp = [];
       List tempforname = [];
