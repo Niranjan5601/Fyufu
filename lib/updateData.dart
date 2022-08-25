@@ -44,11 +44,10 @@ class _UpdateDetailsState extends State<UpdateDetails> {
     }
     dynamic datax;
     var rr = imglist.toString();
-    rr = rr.substring(2, rr.length );
+    rr = rr.substring(2, rr.length);
 
     imglist = rr.split(",");
 
-   
     void updatedata() async {
       var newadd = (pathxy.substring(0, pathxy.lastIndexOf("/") + 1)) +
           updatecategoriesController.text;
@@ -69,12 +68,7 @@ class _UpdateDetailsState extends State<UpdateDetails> {
 
       vehicleStream = database.child(pathxy).onValue.listen((event) {
         datax = event.snapshot.value;
-        // database.child(newadd).set(datax);
-        //print(datax);
       });
-      //final dataToUpdate = await database.child(pathxy).get();
-      // database.child(newadd).set(dataToUpdate);
-      //database.child(pathxy).remove();
 
       updatedescriptionController.clear();
       updatecategoriesController.clear();
@@ -84,8 +78,7 @@ class _UpdateDetailsState extends State<UpdateDetails> {
     return WillPopScope(
         onWillPop: () async {
           pathxy = pathxy.substring(0, pathxy.lastIndexOf("/"));
-          Navigator.pop(context);
-          pgtitle = pathxy.substring(pathxy.lastIndexOf("/") + 1);
+          gotolastpage(context);
           return false;
         },
         child: Scaffold(
@@ -252,7 +245,7 @@ class _UpdateDetailsState extends State<UpdateDetails> {
 
                         pgtitle = "MainPage";
 
-                        Navigator.push(
+                        Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
                               builder: (context) => MainPage(
@@ -313,12 +306,4 @@ class _UpdateDetailsState extends State<UpdateDetails> {
     return http.get(Uri.parse(
         'https://vehicle-8c2b1-default-rtdb.firebaseio.com/MainPage.json'));
   }
-
-
- 
 }
-// if using auto gen keys - can use some mapping with key as names and then values as a list of ( auto gen keys, image, lp , (desc , price - if available)  )
-
-// fro example (2312312312 : [name: ramesh, image: url, lp: yes, desc: sfsdf, price: 1], 23233333111111: [name: suresh, image: url, lp:no])
-
-// now if clicking on suresh it must store that key and then follow te same process ,if again a path with sub-childs is clicked it will also store that key and help in navigation 

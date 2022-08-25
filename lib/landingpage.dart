@@ -18,7 +18,7 @@ class _LandingPageState extends State<LandingPage> {
   @override
   Widget build(BuildContext context) {
     widget.cat[0].forEach((k, v) {
-      if (k == "image") {
+      if (k == "images") {
         img = v;
       }
       if (k == "price") {

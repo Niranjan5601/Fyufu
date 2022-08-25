@@ -78,13 +78,11 @@ class _MainPageState extends State<MainPage> {
         });
       } else {
         data.forEach((k, v) async {
-          if (k != "lp" && k != "desc" && k != "price") {
+          if (k != "lp" && k != "desc" && k != "price" && k != "images") {
             temp.add(k);
             tempforname.add(k);
 
-            // fetch image urls in a function and append those in the list - "images"
-
-            //images.add("value");
+            //here also get one of the images associated with each category to display in grid widget
           }
         });
 
@@ -100,21 +98,11 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return WillPopScope(
       onWillPop: () async {
-                print('TestWidget: ${ModalRoute.of(context)?.isCurrent}');
-
-        if (pgtitle == "MainPage" ) {
-          return false;
-        } else {
           pathxy = pathxy.substring(0, pathxy.lastIndexOf("/"));
-         // Navigator.pop(context);
-          activateListeners(pathxy);
-          pgtitle = pathxy.substring(pathxy.lastIndexOf("/")+1);
-
-          return true;
-        }
+        gotolastpage(context);
+        return false;
       },
       child: Scaffold(
         drawer: Drawer(
@@ -130,7 +118,7 @@ class _MainPageState extends State<MainPage> {
                   child: Wrap(children: [
                     IconButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          gotolastpage(context);
                         },
                         icon: Icon(Icons.arrow_back)),
                     Padding(
@@ -154,7 +142,7 @@ class _MainPageState extends State<MainPage> {
                   style: TextStyle(color: Colors.black, fontSize: 20),
                 ),
                 onTap: () {
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => AboutPage()),
                   );
@@ -225,7 +213,7 @@ class _MainPageState extends State<MainPage> {
                 onPressed: () {
                   uplimg.clear();
                   pickedimgList.clear();
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(builder: (context) => AddDetails()),
                   );

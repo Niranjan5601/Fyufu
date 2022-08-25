@@ -5,12 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:firebase_core/firebase_core.dart' as firebase_core;
 
 import 'package:image_picker/image_picker.dart';
 
 import 'globalvar.dart';
-import 'mainpage.dart';
 
 class AddDetails extends StatefulWidget {
   AddDetails({Key? key}) : super(key: key);
@@ -23,6 +21,8 @@ class _AddDetailsState extends State<AddDetails> {
   bool isChecked = false;
   bool toenable = false;
 
+  List<String> files = [];
+
   var categoriesController = TextEditingController();
   var descriptionController = TextEditingController();
   var pathController = TextEditingController()..text = pathxy;
@@ -34,19 +34,8 @@ class _AddDetailsState extends State<AddDetails> {
     pgtitle = "Insert Data";
     return WillPopScope(
       onWillPop: () async {
-        if (pathxy != "MainPage") {
-          pathxy = pathxy.substring(0, pathxy.lastIndexOf("/"));
-        }
-        //Navigator.pop(context);
-        // Navigator.push(
-        //   context,
-        //   MaterialPageRoute(
-        //       builder: (context) => MainPage(
-        //             title: pathxy,
-        //           )),
-        // );
-        pgtitle = pathxy;
-        return true;
+        gotolastpage(context);
+        return false;
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
@@ -134,8 +123,13 @@ class _AddDetailsState extends State<AddDetails> {
                                                 30, 0, 0, 30),
                                             onPressed: () {
                                               setState(() {
+                                                FirebaseStorage.instance
+                                                    .refFromURL(files[indx])
+                                                    .delete();
+
                                                 pickedimgList.removeAt(indx);
                                                 uplimg.removeAt(indx);
+                                                files.removeAt(indx);
                                               });
                                             },
                                             icon: Icon(
@@ -215,10 +209,9 @@ class _AddDetailsState extends State<AddDetails> {
                       } else if (!formkey.currentState!.validate()) {
                         return;
                       }
-
-                      uploadtofb();
-
-// here, go back to the page from which the plus icon was clicked
+                      insertData();
+                      //loadImages().then((value) => insertData());
+                      //uploadtofb();
                     },
                     child: const Text(
                       "Add",
@@ -235,6 +228,19 @@ class _AddDetailsState extends State<AddDetails> {
   }
 
   uploadImage(int camnum) async {
+    pp = categoriesController.text.toString().trim().toString();
+
+    if (pp.toString().isEmpty) {
+      final snackBar = SnackBar(
+        content: Text('Enter category name first'),
+        duration: Duration(milliseconds: 500),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+    ;
+
     final _imagePicker = ImagePicker();
     PickedFile image;
 
@@ -242,42 +248,49 @@ class _AddDetailsState extends State<AddDetails> {
 // but this method is very quick and saves a lot of trouble
 // so gotta do some research for the value
 
-
     if (camnum == 0) {
-      image = (await _imagePicker.getImage(source: ImageSource.camera,imageQuality: 10))!;
+      image = (await _imagePicker.getImage(
+          source: ImageSource.camera, imageQuality: 40))!;
     } else {
-      image = (await _imagePicker.getImage(source: ImageSource.gallery,imageQuality: 40))!;
+      image = (await _imagePicker.getImage(
+          source: ImageSource.gallery, imageQuality: 40))!;
     }
 
+                                                    
     try {
       if (image == null) {
         return null;
       }
       var file = File(image.path);
 
+      print(image.path.toString());
+
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child(pathxy + "/" + pp + "/" + image.path.replaceAll("/", ""));
+
+      ref.putFile(file).then((TaskSnapshot taskSnapshot) {
+        if (taskSnapshot.state == TaskState.success) {
+          print("Image uploaded Successful");
+          // Get Image URL Now
+          taskSnapshot.ref.getDownloadURL().then((imageURL) {
+            files.add(imageURL);
+            {
+              print("Image Download URL is $imageURL");
+            }
+          });
+        } else if (taskSnapshot.state == TaskState.running) {
+          // Show Prgress indicator
+        } else if (taskSnapshot.state == TaskState.error) {
+          // Handle Error Here
+        }
+      });
+      ;
+
       uplimg.add(file);
 
       setState(() => pickedimgList.add(file));
     } on PlatformException catch (e) {}
-  }
-
-  uploadtofb() async {
-    count = 0;
-    pp = categoriesController.text;
-
-    for (var zx in uplimg) {
-      count++;
-
-      final ref = FirebaseStorage.instance
-          .ref()
-          .child((pathxy + "/" + pp + "/" + count.toString()));
-
-      ref.putFile(zx);
-    }
-
-    var _timer = new Timer(const Duration(milliseconds: 2000), () {
-      insertData();
-    });
   }
 
   Future<void> insertData() async {
@@ -286,6 +299,7 @@ class _AddDetailsState extends State<AddDetails> {
     }
     database.child(pathxy).child(categoriesController.text).set({
       "lp": landingpg,
+      "iamges": pickedimgList.isEmpty ? "[]" : files.toString(),
       "desc": descriptionController.text.isEmpty
           ? null
           : descriptionController.text,
@@ -296,31 +310,13 @@ class _AddDetailsState extends State<AddDetails> {
     categoriesController.clear();
     priceController.clear();
 
-    final firebase_storage.FirebaseStorage storage =
-        firebase_storage.FirebaseStorage.instance;
-
-    final result = await storage.ref(pathxy + "/" + pp).list();
-    final List<Reference> allFiles = result.items;
-
-    await Future.forEach<Reference>(allFiles, (file) async {
-      final String fileUrl = await file.getDownloadURL();
-
-      storageImages.add(fileUrl);
-    });
-
-    database
-        .child(pathxy + "/" + pp)
-        .child(categoriesController.text)
-        .update({"images": storageImages.toString()});
-
-    // database.child(pathxy).child(pp).update({"image": storageImages.isEmpty?null:storageImages});
-
     final snackBar = SnackBar(
-      content: Text('Added Data'),
+      content: Text(' Data Added '),
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
-    pathxy = pathxy.substring(0, pathxy.lastIndexOf("/"));
-    pgtitle = pathxy.substring(pathxy.lastIndexOf("/") + 1);
+    gotolastpage(context);
   }
+
+  
 }

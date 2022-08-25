@@ -14,10 +14,11 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    // check for update in the application
+    
+    
+    // check for update in the firebasedatabase
 
     vehicleStream = database.child("Update").onValue.listen((event) {
       dynamic data = event.snapshot.value;
@@ -25,9 +26,10 @@ class MyApp extends StatelessWidget {
       if (data == "yes") {
         //show alert dialog box to update the app from playstore
 
-      } else {}
+      } else {
+        
+      }
     });
-    //fetching here also doesn't work and causes the same error
 
   
     return MaterialApp(

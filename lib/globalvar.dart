@@ -4,6 +4,8 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
+import 'mainpage.dart';
+
 final formkey = GlobalKey<FormState>();
 var pathxy = "MainPage";
 var pgtitle = "MainPage";
@@ -42,5 +44,24 @@ Future<void> getimgurl(String pathforimg) async {
     storageImages.add(fileUrl);
   });
 
-  // database.child(pathxy).child(pp).update({"image": storageImages.isEmpty?null:storageImages});
+
+   
 }
+
+gotolastpage(var context) {
+    print("SDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD " + pathxy + " kk " + pgtitle);
+    pgtitle = pathxy;
+    if (pathxy != "MainPage") {
+      pgtitle = pathxy.substring(pathxy.lastIndexOf("/") + 1);
+    }
+    print("SDDDDDDDDDDDDDDD " + pathxy + " kk " + pgtitle);
+
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+          builder: (context) => MainPage(
+                title: pgtitle,
+              )),
+    );
+
+  }

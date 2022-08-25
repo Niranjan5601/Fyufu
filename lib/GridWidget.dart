@@ -25,23 +25,23 @@ class GridWidget extends StatelessWidget {
       data = event.snapshot.value;
       var df = (data.toString());
       df = df.substring(df.indexOf("\"lp") + 6);
-      df = df.substring(0,df.indexOf(","));
+      df = df.substring(0, df.indexOf(","));
       if (df == "yes") {
         temp.add("yes");
         temp.add(event.snapshot.child("name").value);
-        temp.add(event.snapshot.child("image").value);
+        temp.add(event.snapshot.child("images").value);
 
         temp.add(event.snapshot.child("desc").value);
         temp.add(event.snapshot.child("price").value);
       } else {
         temp.add("no");
         temp.add(event.snapshot.child("name").value);
-        temp.add(event.snapshot.child("image").value);
+        temp.add(event.snapshot.child("images").value);
       }
     });
 
     Future.delayed(Duration(milliseconds: 100), () {
-      Navigator.push(
+      Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => UpdateDetails(),
@@ -71,7 +71,7 @@ class GridWidget extends StatelessWidget {
                     pathxy += "/" + categories[idx];
                     !isSelected
                         ? callupda(context)
-                        : Navigator.push(
+                        : Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => MainPage(
@@ -132,7 +132,7 @@ class GridWidget extends StatelessWidget {
                                           actions: [
                                             FlatButton(
                                               onPressed: () {
-                                                Navigator.pop(context);
+                                                gotolastpage(context);
                                               },
                                               child: Text("No"),
                                             ),
@@ -143,7 +143,7 @@ class GridWidget extends StatelessWidget {
                                                       .child(text[idx])
                                                       .remove()
                                                       .whenComplete(() {
-                                                    Navigator.pop(context);
+                                                    gotolastpage(context);
                                                   });
                                                   final snackBar = SnackBar(
                                                     content: Text(
