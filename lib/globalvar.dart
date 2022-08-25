@@ -31,22 +31,16 @@ var smapval = [];
 var storageImages = [];
 
 Future<void> getimgurl(String pathforimg) async {
-   
+  final FirebaseStorage storage = FirebaseStorage.instance;
 
-    final FirebaseStorage storage =
-        FirebaseStorage.instance;
+  final result = await storage.ref(pathforimg).list();
+  final List<Reference> allFiles = result.items;
 
-    final result = await storage.ref(pathforimg).list();
-    final List<Reference> allFiles = result.items;
+  await Future.forEach<Reference>(allFiles, (file) async {
+    final String fileUrl = await file.getDownloadURL();
 
-    await Future.forEach<Reference>(allFiles, (file) async {
-      final String fileUrl = await file.getDownloadURL();
+    storageImages.add(fileUrl);
+  });
 
-      storageImages.add(fileUrl);
-    });
-
-    // database.child(pathxy).child(pp).update({"image": storageImages.isEmpty?null:storageImages});
-
-    
-
-  }
+  // database.child(pathxy).child(pp).update({"image": storageImages.isEmpty?null:storageImages});
+}

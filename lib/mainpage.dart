@@ -26,18 +26,13 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-
-DateTime now = DateTime.now();
-DateTime now2 = DateTime.now();
-
   final database = FirebaseDatabase.instance.reference();
   bool isSelected = true;
   @override
   void initState() {
     // TODO: implement initStated
     super.initState();
- now = DateTime.now();
-
+    categories.clear();
 
     activateListeners(pathxy);
 
@@ -59,22 +54,19 @@ DateTime now2 = DateTime.now();
     //   "desc": "descriptionController",
     //   "price": "100"
     // });
-  
 
-  //   var _timer = new Timer(const Duration(milliseconds: 4000), () {
+    //   var _timer = new Timer(const Duration(milliseconds: 4000), () {
 
-      // });
-  
-  
+    // });
   }
 
   Future<void> activateListeners(String x) async {
     vehicleStream = database.child(x).onValue.listen((event) async {
       dynamic data = event.snapshot.value;
 
-      
-
-      List temp = [];
+      temp2 = [];
+      tempforname = [];
+      temp = [];
       landingpg = await event.snapshot.child("lp").value;
       if (landingpg == "yes") {
         data.forEach((k, v) {
@@ -96,9 +88,6 @@ DateTime now2 = DateTime.now();
           }
         });
 
-
-
-     
         tempforname.sort();
         temp.sort();
 
@@ -109,21 +98,22 @@ DateTime now2 = DateTime.now();
     });
   }
 
- 
-
   @override
   Widget build(BuildContext context) {
+
     return WillPopScope(
       onWillPop: () async {
-        if (pathxy == "MainPage") {
+                print('TestWidget: ${ModalRoute.of(context)?.isCurrent}');
+
+        if (pgtitle == "MainPage" ) {
           return false;
         } else {
           pathxy = pathxy.substring(0, pathxy.lastIndexOf("/"));
-          Navigator.pop(context);
+         // Navigator.pop(context);
           activateListeners(pathxy);
-          pgtitle = pathxy;
+          pgtitle = pathxy.substring(pathxy.lastIndexOf("/")+1);
 
-          return false;
+          return true;
         }
       },
       child: Scaffold(
@@ -207,15 +197,17 @@ DateTime now2 = DateTime.now();
             ///if Landing page call another activity to diplay things accordingly
             ///
             ///
-    
-            ? 
+
+            ?
             //const Center(child: CircularProgressIndicator())
-          Align(
-  alignment: Alignment.center, // Align however you like (i.e .centerRight, centerLeft)
-  child: Text("No Data Found",
+            Align(
+                alignment: Alignment
+                    .center, // Align however you like (i.e .centerRight, centerLeft)
+                child: Text(
+                  "No Data Found",
                   style: TextStyle(color: Colors.black, fontSize: 20),
-  ),
-)
+                ),
+              )
             : landingpg == "yes"
                 ? LandingPage(
                     cat: categories,

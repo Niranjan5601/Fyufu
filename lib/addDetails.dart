@@ -31,11 +31,13 @@ class _AddDetailsState extends State<AddDetails> {
 
   @override
   Widget build(BuildContext context) {
+    pgtitle = "Insert Data";
     return WillPopScope(
       onWillPop: () async {
-        pathxy = pathxy.substring(0, pathxy.lastIndexOf("/"));
-        print("path" + pathxy);
-        Navigator.pop(context);
+        if (pathxy != "MainPage") {
+          pathxy = pathxy.substring(0, pathxy.lastIndexOf("/"));
+        }
+        //Navigator.pop(context);
         // Navigator.push(
         //   context,
         //   MaterialPageRoute(
@@ -44,12 +46,12 @@ class _AddDetailsState extends State<AddDetails> {
         //           )),
         // );
         pgtitle = pathxy;
-        return false;
+        return true;
       },
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(
-          title: Text("Insert Data"),
+          title: Text(pgtitle),
         ),
         body: SafeArea(
             child: Form(
@@ -236,10 +238,15 @@ class _AddDetailsState extends State<AddDetails> {
     final _imagePicker = ImagePicker();
     PickedFile image;
 
+// sometimes even if the quality is more the actual quality is less than the one obtained from less quality function i.e. - it is confusing
+// but this method is very quick and saves a lot of trouble
+// so gotta do some research for the value
+
+
     if (camnum == 0) {
-      image = (await _imagePicker.getImage(source: ImageSource.camera))!;
+      image = (await _imagePicker.getImage(source: ImageSource.camera,imageQuality: 10))!;
     } else {
-      image = (await _imagePicker.getImage(source: ImageSource.gallery))!;
+      image = (await _imagePicker.getImage(source: ImageSource.gallery,imageQuality: 40))!;
     }
 
     try {
@@ -267,7 +274,10 @@ class _AddDetailsState extends State<AddDetails> {
 
       ref.putFile(zx);
     }
-    insertData();
+
+    var _timer = new Timer(const Duration(milliseconds: 2000), () {
+      insertData();
+    });
   }
 
   Future<void> insertData() async {
@@ -286,17 +296,22 @@ class _AddDetailsState extends State<AddDetails> {
     categoriesController.clear();
     priceController.clear();
 
-    // final firebase_storage.FirebaseStorage storage =
-    //     firebase_storage.FirebaseStorage.instance;
+    final firebase_storage.FirebaseStorage storage =
+        firebase_storage.FirebaseStorage.instance;
 
-    // final result = await storage.ref("MainPage/awaa").list();
-    // final List<Reference> allFiles = result.items;
+    final result = await storage.ref(pathxy + "/" + pp).list();
+    final List<Reference> allFiles = result.items;
 
-    // await Future.forEach<Reference>(allFiles, (file) async {
-    //   final String fileUrl = await file.getDownloadURL();
+    await Future.forEach<Reference>(allFiles, (file) async {
+      final String fileUrl = await file.getDownloadURL();
 
-    //   storageImages.add(fileUrl);
-    // });
+      storageImages.add(fileUrl);
+    });
+
+    database
+        .child(pathxy + "/" + pp)
+        .child(categoriesController.text)
+        .update({"images": storageImages.toString()});
 
     // database.child(pathxy).child(pp).update({"image": storageImages.isEmpty?null:storageImages});
 
@@ -305,5 +320,7 @@ class _AddDetailsState extends State<AddDetails> {
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    pathxy = pathxy.substring(0, pathxy.lastIndexOf("/"));
+    pgtitle = pathxy.substring(pathxy.lastIndexOf("/") + 1);
   }
 }

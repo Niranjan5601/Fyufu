@@ -27,15 +27,9 @@ class MyApp extends StatelessWidget {
 
       } else {}
     });
-    print(storageImages.toString() + "LLL");
     //fetching here also doesn't work and causes the same error
 
-    Storage stor = Storage();
-    var imagesii = Future.value(stor.loadImages());
-    print(imagesii.toString());
-
-    print(storageImages.toString() + "PPPPPPPPPPPPPPPPPP");
-
+  
     return MaterialApp(
       title: 'MainPage',
       theme: ThemeData(
