@@ -69,6 +69,9 @@ class _AddDetailsState extends State<AddDetails> {
                     height: 15,
                   ),
                   TextFormField(
+                    inputFormatters: <TextInputFormatter>[
+      FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z ]")),
+  ],
                     controller: categoriesController,
                     decoration: const InputDecoration(
                         label: Text("Categories/Models"),
@@ -170,6 +173,9 @@ class _AddDetailsState extends State<AddDetails> {
                     height: 15,
                   ),
                   TextFormField(
+                    inputFormatters: <TextInputFormatter>[
+      FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z ]")),
+  ],
                     enabled: toenable,
                     validator: (value) {
                       if (value!.isNotEmpty) {
@@ -186,6 +192,9 @@ class _AddDetailsState extends State<AddDetails> {
                     height: 15,
                   ),
                   TextFormField(
+                    inputFormatters: <TextInputFormatter>[
+      FilteringTextInputFormatter.allow(RegExp("[0-9a-zA-Z ]")),
+  ],
                     enabled: toenable,
                     validator: (value) {
                       if (value!.isNotEmpty) {
@@ -210,8 +219,7 @@ class _AddDetailsState extends State<AddDetails> {
                         return;
                       }
                       insertData();
-                      //loadImages().then((value) => insertData());
-                      //uploadtofb();
+                    
                     },
                     child: const Text(
                       "Add",
@@ -263,7 +271,6 @@ class _AddDetailsState extends State<AddDetails> {
       }
       var file = File(image.path);
 
-      print(image.path.toString());
 
       final ref = FirebaseStorage.instance
           .ref()
@@ -299,7 +306,7 @@ class _AddDetailsState extends State<AddDetails> {
     }
     database.child(pathxy).child(categoriesController.text).set({
       "lp": landingpg,
-      "iamges": pickedimgList.isEmpty ? "[]" : files.toString(),
+      "images": pickedimgList.isEmpty ? "[]" : files.toString(),
       "desc": descriptionController.text.isEmpty
           ? null
           : descriptionController.text,

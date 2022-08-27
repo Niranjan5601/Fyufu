@@ -23,24 +23,25 @@ class GridWidget extends StatelessWidget {
     vehicleStream = database.child(pathxy).onValue.listen((event) {
       dynamic data;
       data = event.snapshot.value;
-      var df = (data.toString());
-      df = df.substring(df.indexOf("\"lp") + 6);
-      df = df.substring(0, df.indexOf(","));
-      if (df == "yes") {
-        temp.add("yes");
-        temp.add(event.snapshot.child("name").value);
-        temp.add(event.snapshot.child("images").value);
 
-        temp.add(event.snapshot.child("desc").value);
-        temp.add(event.snapshot.child("price").value);
+      if (data["lp"] == "yes") {
+        temp.add("yes");
+        temp.add(event.snapshot.key);
+        temp.add(data["images"]);
+
+        temp.add(data["desc"]);
+        temp.add(data["price"]);
       } else {
         temp.add("no");
-        temp.add(event.snapshot.child("name").value);
-        temp.add(event.snapshot.child("images").value);
+        temp.add(event.snapshot.key);
+        temp.add(data["images"]);
       }
     });
 
+
     Future.delayed(Duration(milliseconds: 100), () {
+
+
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(

@@ -1,14 +1,12 @@
-import 'dart:async';
-import 'dart:convert';
+import 'dart:io';
 
-import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'globalvar.dart';
 import 'mainpage.dart';
-import 'package:http/http.dart' as http;
-
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
 class UpdateDetails extends StatefulWidget {
   UpdateDetails({
@@ -21,7 +19,7 @@ class UpdateDetails extends StatefulWidget {
 
 class _UpdateDetailsState extends State<UpdateDetails> {
   bool isChecked = false;
-  List temp2 = [];
+  List<String> files = [];
 
   void initState() {
     super.initState();
@@ -42,11 +40,11 @@ class _UpdateDetailsState extends State<UpdateDetails> {
       updatedescriptionController.text = temp[3];
       isChecked = true;
     }
-    dynamic datax;
-    var rr = imglist.toString();
-    rr = rr.substring(2, rr.length);
+    print("ggghhhhhhhhhhhhhh"+imglist.toString()+"");
 
-    imglist = rr.split(",");
+    var rr = imglist.toString();
+    print("gggyyyyyyyyyyyyy"+rr+"");
+        print("gggggggggggggggggggg"+imglist.toString()+"");
 
     void updatedata() async {
       var newadd = (pathxy.substring(0, pathxy.lastIndexOf("/") + 1)) +
@@ -113,6 +111,10 @@ class _UpdateDetailsState extends State<UpdateDetails> {
                       height: 15,
                     ),
                     TextFormField(
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(
+                            RegExp("[0-9a-zA-Z ]")),
+                      ],
                       controller: updatecategoriesController,
                       decoration: const InputDecoration(
                           label: Text("Categories/Models"),
@@ -129,7 +131,24 @@ class _UpdateDetailsState extends State<UpdateDetails> {
                             ))
                       ],
                     ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton(
+                            child: const Text(
+                              "Open Camera",
+                              textAlign: TextAlign.center,
+                            ),
+                            onPressed: () => uploadImage(0)),
+                        ElevatedButton(
+                            child: const Text("Choose from \n gallery",
+                                textAlign: TextAlign.center),
+                            onPressed: () => uploadImage(1)),
+                      ],
+                    ),
                     Container(
+                      // if image list is empty it must not give an error, for now it is showing invalid arguments
+
                       padding: EdgeInsets.all(10),
                       height: MediaQuery.of(context).size.height / 7,
                       width: double.infinity,
@@ -195,6 +214,10 @@ class _UpdateDetailsState extends State<UpdateDetails> {
                       height: 15,
                     ),
                     TextFormField(
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(
+                            RegExp("[0-9a-zA-Z ]")),
+                      ],
                       enabled: toenable,
                       validator: (value) {
                         if (value!.isNotEmpty) {
@@ -211,6 +234,10 @@ class _UpdateDetailsState extends State<UpdateDetails> {
                       height: 15,
                     ),
                     TextFormField(
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.allow(
+                            RegExp("[0-9a-zA-Z ]")),
+                      ],
                       enabled: toenable,
                       validator: (value) {
                         if (value!.isNotEmpty) {
@@ -266,44 +293,72 @@ class _UpdateDetailsState extends State<UpdateDetails> {
         ));
   }
 
-  Future<List> loadImages(String imgloadpath) async {
-    List<String> files = [];
-    final firebase_storage.FirebaseStorage storage =
-        firebase_storage.FirebaseStorage.instance;
-
-    final result = await storage.ref(imgloadpath).list();
-    final List<firebase_storage.Reference> allFiles = result.items;
-
-    await Future.forEach<firebase_storage.Reference>(allFiles, (file) async {
-      final String fileUrl = await file.getDownloadURL();
-
-      files.add(fileUrl);
-    });
-
-    return files;
-  }
-
   @override
   void deactivate() {
     vehicleStream?.cancel();
     super.deactivate();
   }
 
-  static Future<int> getUserAmount() async {
-    dynamic datax;
+  uploadImage(int camnum) async {
+    //pp = categoriesController.text.toString().trim().toString();
 
-    vehicleStream = database.child("MainPage").onValue.listen((event) async {});
-    final sdfsd = await FirebaseDatabase.instance.ref().child("MainPage").get();
-    var users = [];
+    if (pp.toString().isEmpty) {
+      final snackBar = SnackBar(
+        content: Text('Enter category name first'),
+        duration: Duration(milliseconds: 500),
+      );
 
-    var collection = FirebaseDatabase.instance.ref().child('MainPage');
-    var querySnapshot = await collection.get();
+      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+      return;
+    }
+    ;
 
-    return users.length;
-  }
+    final _imagePicker = ImagePicker();
+    PickedFile image;
 
-  Future<http.Response> fetchAlbum() {
-    return http.get(Uri.parse(
-        'https://vehicle-8c2b1-default-rtdb.firebaseio.com/MainPage.json'));
+// sometimes even if the quality is more the actual quality is less than the one obtained from less quality function i.e. - it is confusing
+// but this method is very quick and saves a lot of trouble
+// so gotta do some research for the value
+
+    if (camnum == 0) {
+      image = (await _imagePicker.getImage(
+          source: ImageSource.camera, imageQuality: 40))!;
+    } else {
+      image = (await _imagePicker.getImage(
+          source: ImageSource.gallery, imageQuality: 40))!;
+    }
+
+    try {
+      if (image == null) {
+        return null;
+      }
+      var file = File(image.path);
+
+      final ref = FirebaseStorage.instance
+          .ref()
+          .child(pathxy + "/" + pp + "/" + image.path.replaceAll("/", ""));
+
+      ref.putFile(file).then((TaskSnapshot taskSnapshot) {
+        if (taskSnapshot.state == TaskState.success) {
+          print("Image uploaded Successful");
+          // Get Image URL Now
+          taskSnapshot.ref.getDownloadURL().then((imageURL) {
+            files.add(imageURL);
+            {
+              print("Image Download URL is $imageURL");
+            }
+          });
+        } else if (taskSnapshot.state == TaskState.running) {
+          // Show Prgress indicator
+        } else if (taskSnapshot.state == TaskState.error) {
+          // Handle Error Here
+        }
+      });
+      ;
+
+      uplimg.add(file);
+
+      setState(() => pickedimgList.add(file));
+    } on PlatformException catch (e) {}
   }
 }
