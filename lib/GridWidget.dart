@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:anything/globalvar.dart';
 import 'package:anything/mainpage.dart';
 import 'package:anything/storage_service.dart';
@@ -21,8 +23,7 @@ class GridWidget extends StatelessWidget {
   callupda(var context) {
     temp.clear();
     vehicleStream = database.child(pathxy).onValue.listen((event) {
-      dynamic data;
-      data = event.snapshot.value;
+      dynamic data = event.snapshot.value;
 
       if (data["lp"] == "yes") {
         temp.add("yes");
@@ -35,11 +36,26 @@ class GridWidget extends StatelessWidget {
         temp.add("no");
         temp.add(event.snapshot.key);
         temp.add(data["images"]);
+
       }
     });
 
+    var _timer = new Timer(const Duration(milliseconds: 400), () {
 
-    Future.delayed(Duration(milliseconds: 100), () {
+
+      temp[2] = temp[2].toString().substring(
+          1,
+          temp[2].toString().length -
+              1); //get only the urls by removing square brackets
+
+      temp[2] = temp[2].toString().split(","); // split the urls
+
+      // assign the values
+
+      pickedimgList = temp[2];
+
+      alreadyimgcount = pickedimgList.length;
+
 
 
       Navigator.pushReplacement(
@@ -48,6 +64,31 @@ class GridWidget extends StatelessWidget {
           builder: (context) => UpdateDetails(),
         ),
       );
+    });
+
+    Future.delayed(Duration(milliseconds: 10000), () {
+      // print(temp[2]);
+
+      // temp[2] = temp[2].toString().substring(
+      //     1,
+      //     temp[2].toString().length -
+      //         1); //get only the urls by removing square brackets
+
+      // temp[2] = temp[2].toString().split(","); // split the urls
+
+      // // assign the values
+
+      // pickedimgList = temp[2];
+
+      // print(temp[2]);
+      // alreadyimgcount = pickedimgList.length;
+
+      // Navigator.pushReplacement(
+      //   context,
+      //   MaterialPageRoute(
+      //     builder: (context) => UpdateDetails(),
+      //   ),
+      // );
     });
   }
 

@@ -26,7 +26,6 @@ class _UpdateDetailsState extends State<UpdateDetails> {
   }
 
   bool toenable = false;
-  var imglist = [temp[2]];
 
   var updatedescriptionController = TextEditingController();
   var updatepathController = TextEditingController()..text = pathxy;
@@ -36,41 +35,10 @@ class _UpdateDetailsState extends State<UpdateDetails> {
   @override
   Widget build(BuildContext context) {
     if (temp[0] == "yes") {
+      toenable = true;
       updatepriceController.text = temp[4].toString();
       updatedescriptionController.text = temp[3];
       isChecked = true;
-    }
-    print("ggghhhhhhhhhhhhhh"+imglist.toString()+"");
-
-    var rr = imglist.toString();
-    print("gggyyyyyyyyyyyyy"+rr+"");
-        print("gggggggggggggggggggg"+imglist.toString()+"");
-
-    void updatedata() async {
-      var newadd = (pathxy.substring(0, pathxy.lastIndexOf("/") + 1)) +
-          updatecategoriesController.text;
-
-      database.child(pathxy).set({
-        "name": updatecategoriesController.text,
-        "image": imglist.toString(),
-        "lp": landingpg,
-        "desc": updatedescriptionController.text.isEmpty
-            ? null
-            : updatedescriptionController.text,
-        "price": updatepriceController.text.isEmpty
-            ? null
-            : updatepriceController.text
-      });
-
-      dynamic datax;
-
-      vehicleStream = database.child(pathxy).onValue.listen((event) {
-        datax = event.snapshot.value;
-      });
-
-      updatedescriptionController.clear();
-      updatecategoriesController.clear();
-      updatepriceController.clear();
     }
 
     return WillPopScope(
@@ -155,7 +123,7 @@ class _UpdateDetailsState extends State<UpdateDetails> {
                       child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           shrinkWrap: true,
-                          itemCount: imglist.length,
+                          itemCount: pickedimgList.length,
                           itemBuilder: (BuildContext ctx, int indx) {
                             return Stack(
                                 alignment: Alignment.topRight,
@@ -163,7 +131,7 @@ class _UpdateDetailsState extends State<UpdateDetails> {
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Image.network(
-                                      imglist[indx].toString().trim(),
+                                      pickedimgList[indx].toString().trim(),
                                       fit: BoxFit.cover,
                                     ),
                                   ),
@@ -173,9 +141,36 @@ class _UpdateDetailsState extends State<UpdateDetails> {
                                         padding:
                                             EdgeInsets.fromLTRB(30, 0, 0, 30),
                                         onPressed: () {
+                                          // setState(() {
+
+                                          //   if (indx < alreadyimgcount) {
+                                          //    //delete the already uploaded file the url is saved in "pickedimglist, uplimg and temp[2]"
+                                          //     alreadyimgcount--;
+                                          //   }
+
+                                          //   else {
+                                          //     FirebaseStorage.instance
+                                          //         .refFromURL(files[indx])
+                                          //         .delete();
+                                          //     files.removeAt(indx);
+                                          //   }
+
+                                          //   pickedimgList.removeAt(indx);
+                                          //   uplimg.removeAt(indx);
+                                          // });
+
                                           setState(() {
-                                            pickedimgList.removeAt(indx);
-                                            uplimg.removeAt(indx);
+                                            {
+                                              if (indx < alreadyimgcount) {
+                                                pickedimgList.removeAt(indx);
+                                                alreadyimgcount--;
+                                              } else {
+                                                FirebaseStorage.instance
+                                                    .refFromURL(files[indx])
+                                                    .delete();
+                                                files.removeAt(indx);
+                                              }
+                                            }
                                           });
                                         },
                                         icon: Icon(
@@ -264,21 +259,24 @@ class _UpdateDetailsState extends State<UpdateDetails> {
 
                         updatedata();
 
-                        final snackBar =
-                            SnackBar(content: Text('Updated Data'));
-                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        // final snackBar = SnackBar(
+                        //   content: Text('Updated Data'),
+                        //   duration: new Duration(milliseconds: 500),
+                        // );
 
-                        pathxy = "MainPage";
+                        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-                        pgtitle = "MainPage";
+                        // pathxy = "MainPage";
 
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => MainPage(
-                                    title: pathxy,
-                                  )),
-                        );
+                        // pgtitle = "MainPage";
+
+                        // Navigator.pushReplacement(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //       builder: (context) => MainPage(
+                        //             title: pathxy,
+                        //           )),
+                        // );
                       },
                       child: const Text(
                         "Update",
@@ -300,7 +298,7 @@ class _UpdateDetailsState extends State<UpdateDetails> {
   }
 
   uploadImage(int camnum) async {
-    //pp = categoriesController.text.toString().trim().toString();
+    pp = updatecategoriesController.text.toString().trim().toString();
 
     if (pp.toString().isEmpty) {
       final snackBar = SnackBar(
@@ -356,9 +354,42 @@ class _UpdateDetailsState extends State<UpdateDetails> {
       });
       ;
 
-      uplimg.add(file);
-
       setState(() => pickedimgList.add(file));
     } on PlatformException catch (e) {}
+  }
+
+  void updatedata() async {
+    print("xxxxxxxxxxx" + temp[2].toString());
+    print("xxxxxxxxxxxyyyyyyyyyyyyyy" + pickedimgList.toString());
+
+    temp[2].removeWhere((element) => pickedimgList.contains(element));
+
+    print("xxxxxxxxxxxzzzzzzzzzzzzzzz" + temp[2].toString());
+
+    for (var xy in temp[2]) {
+      FirebaseStorage.instance.refFromURL(xy).delete();
+    }
+    // var newadd = (pathxy.substring(0, pathxy.lastIndexOf("/") + 1)) +
+    //     updatecategoriesController.text;
+    // database.child(pathxy).set({
+    //   "images": (pickedimgList + files).toString(),
+    //   "lp": landingpg,
+    //   "desc": updatedescriptionController.text.isEmpty
+    //       ? null
+    //       : updatedescriptionController.text,
+    //   "price": updatepriceController.text.isEmpty
+    //       ? null
+    //       : updatepriceController.text
+    // });
+
+    // dynamic datax;
+
+    // vehicleStream = database.child(pathxy).onValue.listen((event) {
+    //   datax = event.snapshot.value;
+    // });
+
+    // updatedescriptionController.clear();
+    // updatecategoriesController.clear();
+    // updatepriceController.clear();
   }
 }
