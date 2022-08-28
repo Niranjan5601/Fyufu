@@ -10,9 +10,10 @@ final formkey = GlobalKey<FormState>();
 var pathxy = "MainPage";
 var pgtitle = "MainPage";
 var landingpg;
+  var alreadyimgcount = 0;
+
 var img, desc, price;
 List categories = [];
-List uplimg = [];
 List pickedimgList = [];
 int count = 0;
 dynamic images = [];
@@ -49,12 +50,10 @@ Future<void> getimgurl(String pathforimg) async {
 }
 
 gotolastpage(var context) {
-    print("SDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD " + pathxy + " kk " + pgtitle);
     pgtitle = pathxy;
     if (pathxy != "MainPage") {
       pgtitle = pathxy.substring(pathxy.lastIndexOf("/") + 1);
     }
-    print("SDDDDDDDDDDDDDDD " + pathxy + " kk " + pgtitle);
 
     Navigator.pushReplacement(
       context,

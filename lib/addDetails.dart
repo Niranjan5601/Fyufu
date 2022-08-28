@@ -131,7 +131,6 @@ class _AddDetailsState extends State<AddDetails> {
                                                     .delete();
 
                                                 pickedimgList.removeAt(indx);
-                                                uplimg.removeAt(indx);
                                                 files.removeAt(indx);
                                               });
                                             },
@@ -294,7 +293,6 @@ class _AddDetailsState extends State<AddDetails> {
       });
       ;
 
-      uplimg.add(file);
 
       setState(() => pickedimgList.add(file));
     } on PlatformException catch (e) {}

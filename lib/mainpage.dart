@@ -211,7 +211,6 @@ class _MainPageState extends State<MainPage> {
             : FloatingActionButton(
                 child: Icon(Icons.add),
                 onPressed: () {
-                  uplimg.clear();
                   pickedimgList.clear();
                   Navigator.pushReplacement(
                     context,
