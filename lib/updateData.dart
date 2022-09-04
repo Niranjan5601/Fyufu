@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -22,6 +23,12 @@ class _UpdateDetailsState extends State<UpdateDetails> {
   List<String> files = [];
 
   void initState() {
+    if (temp[0] == "yes") {
+      toenable = true;
+      updatepriceController.text = temp[4].toString();
+      updatedescriptionController.text = temp[3];
+      isChecked = true;
+    }
     super.initState();
   }
 
@@ -34,13 +41,6 @@ class _UpdateDetailsState extends State<UpdateDetails> {
 
   @override
   Widget build(BuildContext context) {
-    if (temp[0] == "yes") {
-      toenable = true;
-      updatepriceController.text = temp[4].toString();
-      updatedescriptionController.text = temp[3];
-      isChecked = true;
-    }
-
     return WillPopScope(
         onWillPop: () async {
           pathxy = pathxy.substring(0, pathxy.lastIndexOf("/"));
@@ -259,24 +259,24 @@ class _UpdateDetailsState extends State<UpdateDetails> {
 
                         updatedata();
 
-                        // final snackBar = SnackBar(
-                        //   content: Text('Updated Data'),
-                        //   duration: new Duration(milliseconds: 500),
-                        // );
+                        final snackBar = SnackBar(
+                          content: Text('Updated Data'),
+                          duration: new Duration(milliseconds: 500),
+                        );
 
-                        // ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                        ScaffoldMessenger.of(context).showSnackBar(snackBar);
 
-                        // pathxy = "MainPage";
+                        pathxy = "MainPage";
 
-                        // pgtitle = "MainPage";
+                        pgtitle = "MainPage";
 
-                        // Navigator.pushReplacement(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //       builder: (context) => MainPage(
-                        //             title: pathxy,
-                        //           )),
-                        // );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => MainPage(
+                                    title: pathxy,
+                                  )),
+                        );
                       },
                       child: const Text(
                         "Update",
@@ -359,37 +359,44 @@ class _UpdateDetailsState extends State<UpdateDetails> {
   }
 
   void updatedata() async {
-    print("xxxxxxxxxxx" + temp[2].toString());
-    print("xxxxxxxxxxxyyyyyyyyyyyyyy" + pickedimgList.toString());
-
     temp[2].removeWhere((element) => pickedimgList.contains(element));
 
-    print("xxxxxxxxxxxzzzzzzzzzzzzzzz" + temp[2].toString());
-
     for (var xy in temp[2]) {
-      FirebaseStorage.instance.refFromURL(xy).delete();
-    }
-    // var newadd = (pathxy.substring(0, pathxy.lastIndexOf("/") + 1)) +
-    //     updatecategoriesController.text;
-    // database.child(pathxy).set({
-    //   "images": (pickedimgList + files).toString(),
-    //   "lp": landingpg,
-    //   "desc": updatedescriptionController.text.isEmpty
-    //       ? null
-    //       : updatedescriptionController.text,
-    //   "price": updatepriceController.text.isEmpty
-    //       ? null
-    //       : updatepriceController.text
-    // });
+      FirebaseStorage.instance.refFromURL(xy.toString().trim()).delete();
+    } // deletes the images from database which are deselected from the list
 
-    // dynamic datax;
+    var newadd = (pathxy.substring(0, pathxy.lastIndexOf("/") + 1)) +
+        updatecategoriesController.text;
 
-    // vehicleStream = database.child(pathxy).onValue.listen((event) {
-    //   datax = event.snapshot.value;
-    // });
+    print(newadd + "objectxxxxxxxxxxxxxxxxxxxxx" + pathxy);
 
-    // updatedescriptionController.clear();
-    // updatecategoriesController.clear();
-    // updatepriceController.clear();
+    database.child(pathxy).update({
+      "images": (pickedimgList + files).toString(),
+      "lp": landingpg,
+      "desc": updatedescriptionController.text.isEmpty
+          ? null
+          : updatedescriptionController.text,
+      "price":
+          updatepriceController.text.isEmpty ? null : updatepriceController.text
+    });
+
+    dynamic datax;
+
+    vehicleStream = database.child(pathxy).onValue.listen((event) {
+      datax = event.snapshot.value;
+if(datax!=null)
+      database.child(newadd).set(datax);
+    });
+
+
+
+    var _timer = new Timer(const Duration(milliseconds: 400), () {
+      
+      database.child(pathxy).remove();
+    });
+
+    updatedescriptionController.clear();
+    updatecategoriesController.clear();
+    updatepriceController.clear();
   }
 }

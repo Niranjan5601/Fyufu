@@ -4,7 +4,6 @@ import 'package:anything/globalvar.dart';
 import 'package:anything/mainpage.dart';
 import 'package:anything/storage_service.dart';
 import 'package:anything/updateData.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class GridWidget extends StatelessWidget {
@@ -22,9 +21,9 @@ class GridWidget extends StatelessWidget {
 
   callupda(var context) {
     temp.clear();
+    pickedimgList.clear();
     vehicleStream = database.child(pathxy).onValue.listen((event) {
       dynamic data = event.snapshot.value;
-
       if (data["lp"] == "yes") {
         temp.add("yes");
         temp.add(event.snapshot.key);
@@ -36,13 +35,10 @@ class GridWidget extends StatelessWidget {
         temp.add("no");
         temp.add(event.snapshot.key);
         temp.add(data["images"]);
-
       }
     });
 
     var _timer = new Timer(const Duration(milliseconds: 400), () {
-
-
       temp[2] = temp[2].toString().substring(
           1,
           temp[2].toString().length -
@@ -52,11 +48,11 @@ class GridWidget extends StatelessWidget {
 
       // assign the values
 
-      pickedimgList = temp[2];
+      for (var mx in temp[2]) {
+        pickedimgList.add(mx);
+      }
 
       alreadyimgcount = pickedimgList.length;
-
-
 
       Navigator.pushReplacement(
         context,
