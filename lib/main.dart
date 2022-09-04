@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:anything/globalvar.dart';
 import 'package:anything/mainpage.dart';
 import 'package:anything/storage_service.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/ui/utils/stream_subscriber_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
@@ -20,7 +23,7 @@ class MyApp extends StatelessWidget {
     
     // check for update in the firebasedatabase
 
-    vehicleStream = database.child("Update").onValue.listen((event) {
+    vehicleStream = database.child("Update").once().then((event) {
       dynamic data = event.snapshot.value;
 
       if (data == "yes") {
@@ -29,7 +32,7 @@ class MyApp extends StatelessWidget {
       } else {
         
       }
-    });
+    })as StreamSubscription;
 
   
     return MaterialApp(

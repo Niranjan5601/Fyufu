@@ -22,7 +22,7 @@ class GridWidget extends StatelessWidget {
   callupda(var context) {
     temp.clear();
     pickedimgList.clear();
-    vehicleStream = database.child(pathxy).onValue.listen((event) {
+    vehicleStream = database.child(pathxy).once().then((event) {
       dynamic data = event.snapshot.value;
       if (data["lp"] == "yes") {
         temp.add("yes");
@@ -36,7 +36,7 @@ class GridWidget extends StatelessWidget {
         temp.add(event.snapshot.key);
         temp.add(data["images"]);
       }
-    });
+    }) as StreamSubscription;
 
     var _timer = new Timer(const Duration(milliseconds: 400), () {
       temp[2] = temp[2].toString().substring(

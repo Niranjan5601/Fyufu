@@ -382,11 +382,11 @@ class _UpdateDetailsState extends State<UpdateDetails> {
 
     dynamic datax;
 
-    vehicleStream = database.child(pathxy).onValue.listen((event) {
+    vehicleStream = database.child(pathxy).once().then((event) {
       datax = event.snapshot.value;
 if(datax!=null)
       database.child(newadd).set(datax);
-    });
+    }) as StreamSubscription?;
 
 
 

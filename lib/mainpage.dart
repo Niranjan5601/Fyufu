@@ -61,7 +61,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   Future<void> activateListeners(String x) async {
-    vehicleStream = database.child(x).onValue.listen((event) async {
+    vehicleStream = database.child(x).once().then((event) async {
       dynamic data = event.snapshot.value;
 
       temp2 = [];
@@ -93,7 +93,7 @@ class _MainPageState extends State<MainPage> {
           categories = temp;
         });
       }
-    });
+    }) as StreamSubscription?;
   }
 
   @override
