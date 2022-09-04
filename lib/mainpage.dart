@@ -1,3 +1,5 @@
+// ignore_for_file: dead_code
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -10,6 +12,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
+import 'package:url_launcher/url_launcher.dart';
 
 import 'addDetails.dart';
 import 'gridwidget.dart';
@@ -40,8 +43,6 @@ class _MainPageState extends State<MainPage> {
     //     "https://vehicle-8c2b1-default-rtdb.firebaseio.com/MainPage/pricelist .json";
 
     // http.get(Uri.parse(url)).then((resp) {
-    //   print("sdfs");
-    //   print((json.decode(resp.body)));
     //   database.child("MainPage/prices").set(json.decode(resp.body));
     //   database.child("MainPage/pricelist ").remove();
     // });
@@ -93,7 +94,7 @@ class _MainPageState extends State<MainPage> {
           categories = temp;
         });
       }
-    }) as StreamSubscription?;
+    });
   }
 
   @override
@@ -211,6 +212,10 @@ class _MainPageState extends State<MainPage> {
             : FloatingActionButton(
                 child: Icon(Icons.add),
                 onPressed: () {
+
+
+
+
                   pickedimgList.clear();
                   Navigator.pushReplacement(
                     context,
@@ -225,7 +230,6 @@ class _MainPageState extends State<MainPage> {
   @override
   void deactivate() {
     // TODO: implement deactivate
-    vehicleStream?.cancel();
     super.deactivate();
   }
 }

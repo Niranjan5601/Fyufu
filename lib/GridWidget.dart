@@ -36,7 +36,7 @@ class GridWidget extends StatelessWidget {
         temp.add(event.snapshot.key);
         temp.add(data["images"]);
       }
-    }) as StreamSubscription;
+    });
 
     var _timer = new Timer(const Duration(milliseconds: 400), () {
       temp[2] = temp[2].toString().substring(
@@ -63,7 +63,6 @@ class GridWidget extends StatelessWidget {
     });
 
     Future.delayed(Duration(milliseconds: 10000), () {
-      // print(temp[2]);
 
       // temp[2] = temp[2].toString().substring(
       //     1,
@@ -76,7 +75,6 @@ class GridWidget extends StatelessWidget {
 
       // pickedimgList = temp[2];
 
-      // print(temp[2]);
       // alreadyimgcount = pickedimgList.length;
 
       // Navigator.pushReplacement(

@@ -21,7 +21,7 @@ List names = [];
 List temp = [];
 List temp2 = [];
 var database = FirebaseDatabase.instance.ref();
-StreamSubscription? vehicleStream;
+var vehicleStream;
 Map<String, List> dummy = {};
 var imgstorage = FirebaseStorage.instance;
 var pp;

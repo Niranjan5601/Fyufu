@@ -293,7 +293,6 @@ class _UpdateDetailsState extends State<UpdateDetails> {
 
   @override
   void deactivate() {
-    vehicleStream?.cancel();
     super.deactivate();
   }
 
@@ -368,7 +367,6 @@ class _UpdateDetailsState extends State<UpdateDetails> {
     var newadd = (pathxy.substring(0, pathxy.lastIndexOf("/") + 1)) +
         updatecategoriesController.text;
 
-    print(newadd + "objectxxxxxxxxxxxxxxxxxxxxx" + pathxy);
 
     database.child(pathxy).update({
       "images": (pickedimgList + files).toString(),
@@ -384,14 +382,10 @@ class _UpdateDetailsState extends State<UpdateDetails> {
 
     vehicleStream = database.child(pathxy).once().then((event) {
       datax = event.snapshot.value;
-if(datax!=null)
-      database.child(newadd).set(datax);
-    }) as StreamSubscription?;
-
-
+      if (datax != null) database.child(newadd).set(datax);
+    });
 
     var _timer = new Timer(const Duration(milliseconds: 400), () {
-      
       database.child(pathxy).remove();
     });
 
